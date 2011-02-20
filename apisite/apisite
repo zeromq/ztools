@@ -35,7 +35,7 @@ function do_branch {
     cd $ZMQ_DIR
     git checkout $1
     sh ./autogen.sh > /dev/null 2>&1
-    configure -q
+    ./configure -q
     cd doc
     rm *.xml
     for a in *.txt; do make `basename $a .txt`.xml; done

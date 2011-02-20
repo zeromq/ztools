@@ -26,6 +26,19 @@ OWN_DIR=$PWD
 #
 UPLOAD=1
 
+# This function uploads a file to wikidot
+# Error in upload will cause the script to exit with non-zero status
+#
+#
+function do_upload {
+    python ./sendpage.py $1 $2 $3
+    
+    if [ $? != 0 ]; then
+        echo "Error uploading file to wikidot"
+        exit 1
+    fi
+}
+
 #   This function builds and uploads one branch's documentation
 #   $1 = branch name or tag name
 #   $2 = category name for resulting pages
@@ -61,7 +74,7 @@ function do_branch {
         echo "Uploading to api.zero.mq/$CATEGORY..."
 
         #   Send table of contents as category:_start
-        python ./sendpage.py $CATEGORY "_start" "ØMQ API"
+        do_upload $CATEGORY "_start" "ØMQ API"
 
         #   Now send individual man pages
         for FILE in $FILES; do
@@ -72,7 +85,7 @@ function do_branch {
             else
                 TITLE="$FILE(7)"
             fi
-            python ./sendpage.py $CATEGORY $FILE $TITLE
+            do_upload $CATEGORY $FILE $TITLE
         done
     fi
 

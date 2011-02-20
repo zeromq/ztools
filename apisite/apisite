@@ -1,0 +1,96 @@
+#! /bin/bash
+#
+#   apisite - Upload all 0MQ manuals to api.zero.mq
+#   Part of the ztools/apisite toolkit.
+#
+#   Author: Pieter Hintjens <ph@imatix.com>
+#   License: public domain
+#
+#   syntax: apisite
+#
+#   See README.md
+
+#   If ZMQ_DIR is not set, assume it's a sibling of ztools
+if [ -z "$ZMQ_DIR" ]; then
+    ZMQ_DIR=../../zeromq2
+fi
+if [ ! -f $ZMQ_DIR/doc/zmq.txt ]; then
+    echo "Can't find 0MQ doc directory in $ZMQ_DIR"
+    exit
+fi
+
+OWN_DIR=$PWD
+
+#   This option controls whether we actually upload or not
+#   Set to 0 to suppress Wikidot uploads for testing
+#
+UPLOAD=1
+
+#   This function builds and uploads one branch's documentation
+#   $1 = branch name or tag name
+#   $2 = category name for resulting pages
+#
+function do_branch {
+    echo "Building docs for $1..."
+    cd $ZMQ_DIR
+    git checkout $1
+    sh ./autogen.sh > /dev/null 2>&1
+    configure -q
+    cd doc
+    rm *.xml
+    for a in *.txt; do make `basename $a .txt`.xml; done
+
+    cd $OWN_DIR
+    export CATEGORY=$2
+
+    echo "Generating XML pages for manual..."
+    cd $ZMQ_DIR/doc
+    for FILE in zmq zmq_*.txt; do
+        BASE=`basename $FILE .txt`
+        make -q $BASE.xml;
+        FILES="$FILES $BASE"
+    done
+
+    cd $OWN_DIR
+    echo "Generating Wikidot pages..."
+    for FILE in $FILES; do
+        perl ./xml2wd.pl $ZMQ_DIR/doc/$FILE.xml > $FILE.wd
+    done
+
+    if [ $UPLOAD -eq 1 ]; then
+        echo "Uploading to api.zero.mq/$CATEGORY..."
+
+        #   Send table of contents as category:_start
+        python ./sendpage.py $CATEGORY "_start" "ØMQ API"
+
+        #   Now send individual man pages
+        for FILE in $FILES; do
+            if [ -f $ZMQ_DIR/doc/$FILE.1 ]; then
+                TITLE="$FILE(1)"
+            elif [ -f $ZMQ_DIR/doc/$FILE.3 ]; then
+                TITLE="$FILE(3)"
+            else
+                TITLE="$FILE(7)"
+            fi
+            python ./sendpage.py $CATEGORY $FILE $TITLE
+        done
+    fi
+
+    echo "Cleaning up..."
+    rm *.wd
+}
+
+#   Build and upload all versions
+#   Comment out whatever you don't need
+do_branch master  master
+#do_branch v2.1.0  2-1-0
+#do_branch v2.0.10 2-0-10
+#do_branch v2.0.9  2-0-9
+#do_branch v2.0.8  2-0-8
+#do_branch v2.0.7  2-0-7
+#do_branch v2.0.6  2-0-6
+
+#   Restore zeromq2 to master branch
+cd $ZMQ_DIR
+git checkout master
+cd $OWN_DIR

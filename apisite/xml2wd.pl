@@ -30,6 +30,9 @@ while (<>) {
     $purpose = $1 if (/<refpurpose>(.*)<\/refpurpose>/);
     if (/<\/refmeta>/) {
         $output = <<"END";
+[!-- PAGE_TITLE
+$title($volume)
+--]
 [[include :csi:include:css-brackets]]
 [[div style="width:30%; float:left;"]]
 $title($volume)

@@ -41,7 +41,7 @@ UPLOAD=1
 #
 function do_upload {
     python ./sendpage.py $1 $2 $3
-    
+
     if [ $? != 0 ]; then
         echo "Error uploading file to wikidot"
         exit 1
@@ -57,9 +57,10 @@ function do_branch {
     cd $ZMQ_DIR
     git checkout $1
     sh ./autogen.sh > /dev/null 2>&1
-    ./configure -q
+    ./configure --quiet
     cd doc
-    rm *.xml
+    make --quiet
+    rm *.xml    #   Makefile does not detect version differences for XML
     for a in *.txt; do make `basename $a .txt`.xml; done
 
     cd $OWN_DIR
@@ -67,9 +68,10 @@ function do_branch {
 
     echo "Generating XML pages for manual..."
     cd $ZMQ_DIR/doc
+    FILES=
     for FILE in zmq zmq_*.txt; do
         BASE=`basename $FILE .txt`
-        make -q $BASE.xml;
+        make --quiet $BASE.xml;
         FILES="$FILES $BASE"
     done
 
@@ -87,13 +89,7 @@ function do_branch {
 
         #   Now send individual man pages
         for FILE in $FILES; do
-            if [ -f $ZMQ_DIR/doc/$FILE.1 ]; then
-                TITLE="$FILE(1)"
-            elif [ -f $ZMQ_DIR/doc/$FILE.3 ]; then
-                TITLE="$FILE(3)"
-            else
-                TITLE="$FILE(7)"
-            fi
+            TITLE=`egrep --after-context 1 PAGE_TITLE $FILE.wd | egrep zmq`
             do_upload $CATEGORY $FILE $TITLE
         done
     fi

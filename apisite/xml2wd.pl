@@ -33,7 +33,6 @@ while (<>) {
 [!-- PAGE_TITLE
 $title($volume)
 --]
-[[include :csi:include:css-brackets]]
 [[div style="width:30%; float:left;"]]
 $title($volume)
 [[/div]]
@@ -78,6 +77,13 @@ END
     elsif (/<refsect3/) {
         $header = "++++";
     }
+    elsif (/<variablelist>/) {
+        $variable_list = 1;
+    }
+    elsif (/<\/variablelist>/) {
+        $variable_list = 0;
+    }
+
     if (/<table.*<title>(.*)<\/title>/) {
         $output = "\n||||~ $1 ||\n";
     }
@@ -96,6 +102,10 @@ END
     }
     elsif (/<title>(.*)<\/title>/) {
         $output = "\n$header ". title_case ($1) ."\n";
+    }
+    elsif (/<note>/) {
+        $_ = load_tag ("simpara");
+        $output = "\n[[note]]\n$_\n[[/note]]\n";
     }
     elsif (/<simpara>/) {
         $_ = load_tag ("simpara");
@@ -121,8 +131,7 @@ END
     }
 
     if (/<term>/) {
-        $_ = load_tag ("term");
-        $output = "\n$_\n";
+        $term = load_tag ("term");
     }
     if (/<listitem>/) {
         $_ = load_tag ("listitem");
@@ -136,7 +145,14 @@ END
         while (/\s*<row>\s*(.*?)\s*<\/row>/) {
             $_ = $` . "\n|| $1\n" . $';
         }
-        $output = "* $_\n";
+        if ($variable_list) {
+            die "Missing term in $name:$.\n" unless $term;
+            $output = "\n: $term:$_\n";
+            $term = "";
+        }
+        else {
+            $output = "* $_\n";
+        }
     }
 
     #   General substitutions
@@ -146,7 +162,7 @@ END
     $output =~ s/0MQ/ØMQ/g;
     $output =~ s/<emphasis>([^<]*)<\/emphasis>/\/\/$1\/\//g;
     $output =~ s/<emphasis role="strong">([^<]*)<\/emphasis>/**$1**/g;
-    $output =~ s/<literal>([^<]*)<\/literal>/{{$1}}/g;
+    $output =~ s/<literal>([^<]*)<\/literal>/{{ $1}}/g;
     $output =~ s/<manvolnum>([^<]*)<\/manvo>/{{$1}}/g;
     $output =~ s/<citerefentry>\s*<refentrytitle>([^<]*)<\/refentrytitle><manvolnum>([^<]*)<\/manvolnum>\s*<\/citerefentry>/\[\/$category:$1 $1($2)\]/g;
     $output =~ s/<ulink url="[^"]*">([^<]*)<\/ulink>/$1/g;

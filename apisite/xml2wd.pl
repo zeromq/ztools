@@ -150,6 +150,7 @@ END
     $output =~ s/<simpara>([^<]*)<\/simpara>/$1/g;
     $output =~ s/&lt;/</g;
     $output =~ s/&gt;/>/g;
+    $output =~ s/&amp;/&/g;
     $output =~ s/&#8217;/'/g;
     $output =~ s/&#8230;/.../g;
 

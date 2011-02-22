@@ -25,9 +25,14 @@ function xpath_url ($url, $expression)
 }
 
 $build_id = xpath_url ($_SERVER['argv'][1], "/html/body/table/tr[last()-1]/td/a");
+if ($build_id === null)
+    die ("build_id not found" . PHP_EOL);
+
 $filename = xpath_url ($_SERVER['argv'][1] . "/{$build_id}", "/html/body/table/tr[last()-1]/td/a");
+if ($filename === null)
+    die ("filename not found" . PHP_EOL);
 
 $snapshot_url = $_SERVER['argv'][1] . "/${build_id}/${filename}";
 echo "The latest snapshot is {$snapshot_url}" . PHP_EOL;
 
-exec ("wget $snapshot_url");
+exec ("wget ${snapshot_url}");

@@ -8,7 +8,7 @@ ztools/apisite - Rebuild api.zero.mq site
 
 **<a href="#toc2-14">How?</a>**
 
-**<a href="#toc2-29">Site Admin and CSS</a>**
+**<a href="#toc2-31">Site Admin and CSS</a>**
 
 <A name="toc2-9" title="What?" />
 ## What?
@@ -28,9 +28,11 @@ To install:
 
 To run *apisite*:
 
-* run ./apisite from the ztools/apisite directory and watch what happens.
+* syntax: apisite [ [ zmq_dir ] branch category ]
+* Without arguments, assumes ØMQ is in ../../zeromq2, and processes the versions released from that git (2.1.0 back to 2.0.6).
+* With arguments, processes a single branch/tag from a specified git repository location. E.g. "apisite ../../zeromq2 master master".
 
-<A name="toc2-29" title="Site Admin and CSS" />
+<A name="toc2-31" title="Site Admin and CSS" />
 ## Site Admin and CSS
 
 To change the look and feel of the site you need edit access, and then you can edit http://api.zero.mq/admin:css. The site manager is at http://api.zero.mq/admin:manage.

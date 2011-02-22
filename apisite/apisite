@@ -6,13 +6,22 @@
 #   Author: Pieter Hintjens <ph@imatix.com>
 #   License: public domain
 #
-#   syntax: apisite
+#   syntax: apisite [ [ zmq_dir ] branch category ]
 #
-#   See README.md
+#   Without arguments, assumes 0MQ is in ../../zeromq2, and processes the
+#   versions released from that git (2.1.0 back to 2.0.6).
+#
+#   With arguments, processes a single branch/tag from a specified git
+#   repository location. E.g. "apisite ../../zeromq2-2-1 master 2-1-1".
+#
+#   See README.md for installation & configuration.
 
-#   If ZMQ_DIR is not set, assume it's a sibling of ztools
-if [ -z "$ZMQ_DIR" ]; then
-    ZMQ_DIR=../../zeromq2
+#   ZMQ_DIR comes from the command line, the environment, or a default
+#
+if [ ! -z "$1" ]; then
+    ZMQ_DIR=$1
+elif [ -z "$ZMQ_DIR" ]; then
+    ZMQ_DIR=../../zeromq2       #   Default location is sibling of ztools
 fi
 if [ ! -f $ZMQ_DIR/doc/zmq.txt ]; then
     echo "Can't find 0MQ doc directory in $ZMQ_DIR"
@@ -32,7 +41,7 @@ UPLOAD=1
 #
 function do_upload {
     python ./sendpage.py $1 $2 $3
-    
+
     if [ $? != 0 ]; then
         echo "Error uploading file to wikidot"
         exit 1
@@ -48,9 +57,10 @@ function do_branch {
     cd $ZMQ_DIR
     git checkout $1
     sh ./autogen.sh > /dev/null 2>&1
-    ./configure -q
+    ./configure --quiet
     cd doc
-    rm *.xml
+    make --quiet
+    rm *.xml    #   Makefile does not detect version differences for XML
     for a in *.txt; do make `basename $a .txt`.xml; done
 
     cd $OWN_DIR
@@ -58,9 +68,10 @@ function do_branch {
 
     echo "Generating XML pages for manual..."
     cd $ZMQ_DIR/doc
+    FILES=
     for FILE in zmq zmq_*.txt; do
         BASE=`basename $FILE .txt`
-        make -q $BASE.xml;
+        make --quiet $BASE.xml;
         FILES="$FILES $BASE"
     done
 
@@ -78,13 +89,7 @@ function do_branch {
 
         #   Now send individual man pages
         for FILE in $FILES; do
-            if [ -f $ZMQ_DIR/doc/$FILE.1 ]; then
-                TITLE="$FILE(1)"
-            elif [ -f $ZMQ_DIR/doc/$FILE.3 ]; then
-                TITLE="$FILE(3)"
-            else
-                TITLE="$FILE(7)"
-            fi
+            TITLE=`egrep --after-context 1 PAGE_TITLE $FILE.wd | egrep zmq`
             do_upload $CATEGORY $FILE $TITLE
         done
     fi
@@ -93,17 +98,23 @@ function do_branch {
     rm *.wd
 }
 
-#   Build and upload all versions
-#   Comment out whatever you don't need
-do_branch master  master
-#do_branch v2.1.0  2-1-0
-#do_branch v2.0.10 2-0-10
-#do_branch v2.0.9  2-0-9
-#do_branch v2.0.8  2-0-8
-#do_branch v2.0.7  2-0-7
-#do_branch v2.0.6  2-0-6
+if [ ! -z "$2" -a ! -z "$3" ]; then
+    echo "Processing $2 branch in $1..."
+    do_branch $2 $3
+else
+    echo "Processing all versions in $ZMQ_DIR..."
+    #   Build and upload all versions
+    #   Comment out whatever you don't need
+    do_branch master  master
+    do_branch v2.1.0  2-1-0
+    do_branch v2.0.10 2-0-10
+    do_branch v2.0.9  2-0-9
+    do_branch v2.0.8  2-0-8
+    do_branch v2.0.7  2-0-7
+    do_branch v2.0.6  2-0-6
+fi
 
-#   Restore zeromq2 to master branch
+#   Restore zeromq2 repository to master branch
 cd $ZMQ_DIR
 git checkout master
 cd $OWN_DIR

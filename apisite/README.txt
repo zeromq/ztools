@@ -22,7 +22,9 @@ To install:
 
 To run *apisite*:
 
-* run ./apisite from the ztools/apisite directory and watch what happens.
+* syntax: apisite [ [ zmq_dir ] branch category ]
+* Without arguments, assumes 0MQ is in ../../zeromq2, and processes the versions released from that git (2.1.0 back to 2.0.6).
+* With arguments, processes a single branch/tag from a specified git repository location. E.g. "apisite ../../zeromq2 master master".
 
 ## Site Admin and CSS
 

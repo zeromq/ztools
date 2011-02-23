@@ -1,32 +1,17 @@
 #! /bin/bash
 #
-#   apisite - Upload all 0MQ manuals to api.zero.mq
-#   Part of the ztools/apisite toolkit.
+#   apione - Upload all 0MQ manuals to api.zero.mq
+#   Part of the ztools/apione toolkit.
 #
 #   Author: Pieter Hintjens <ph@imatix.com>
 #   License: public domain
 #
-#   syntax: apisite [ [ zmq_dir ] branch category ]
+#   syntax: apione zmq_dir branch category
 #
-#   Without arguments, assumes 0MQ is in ../../zeromq2, and processes the
-#   versions released from that git (2.1.0 back to 2.0.6).
-#
-#   With arguments, processes a single branch/tag from a specified git
-#   repository location. E.g. "apisite ../../zeromq2-2-1 master 2-1-1".
+#   Processes a single branch/tag from a specified git repository location. 
+#   E.g. "apione ../../zeromq2-2-1 master 2-1-1".
 #
 #   See README.md for installation & configuration.
-
-#   ZMQ_DIR comes from the command line, the environment, or a default
-#
-if [ ! -z "$1" ]; then
-    ZMQ_DIR=$1
-elif [ -z "$ZMQ_DIR" ]; then
-    ZMQ_DIR=../../zeromq2       #   Default location is sibling of ztools
-fi
-if [ ! -f $ZMQ_DIR/doc/zmq.txt ]; then
-    echo "Can't find 0MQ doc directory in $ZMQ_DIR"
-    exit
-fi
 
 OWN_DIR=$PWD
 
@@ -49,13 +34,15 @@ function do_upload {
 }
 
 #   This function builds and uploads one branch's documentation
-#   $1 = branch name or tag name
-#   $2 = category name for resulting pages
 #
 function do_branch {
-    echo "Building docs for $1..."
+    export ZMQ_DIR=$1
+    export BRANCH=$2
+    export CATEGORY=$3
+    
+    echo "Building docs for $ZMQ_DIR $BRANCH..."
     cd $ZMQ_DIR
-    git checkout $1
+    git checkout -q $BRANCH
     sh ./autogen.sh > /dev/null 2>&1
     ./configure --quiet
     cd doc
@@ -63,11 +50,7 @@ function do_branch {
     rm *.xml    #   Makefile does not detect version differences for XML
     for a in *.txt; do make `basename $a .txt`.xml; done
 
-    cd $OWN_DIR
-    export CATEGORY=$2
-
     echo "Generating XML pages for manual..."
-    cd $ZMQ_DIR/doc
     FILES=
     for FILE in zmq zmq_*.txt; do
         BASE=`basename $FILE .txt`
@@ -96,25 +79,18 @@ function do_branch {
 
     echo "Cleaning up..."
     rm *.wd
+    #   Restore zeromq2 repository to master branch
+    cd $ZMQ_DIR
+    git checkout -q master
+    cd $OWN_DIR
 }
 
-if [ ! -z "$2" -a ! -z "$3" ]; then
-    echo "Processing $2 branch in $1..."
-    do_branch $2 $3
+if [ ! -z "$3" ]; then
+    if [ ! -f $1/doc/zmq.txt ]; then
+        echo "Can't find 0MQ doc directory in $1"
+        exit
+    fi
+    do_branch $1 $2 $3
 else
-    echo "Processing all versions in $ZMQ_DIR..."
-    #   Build and upload all versions
-    #   Comment out whatever you don't need
-    do_branch master  master
-    do_branch v2.1.0  2-1-0
-    do_branch v2.0.10 2-0-10
-    do_branch v2.0.9  2-0-9
-    do_branch v2.0.8  2-0-8
-    do_branch v2.0.7  2-0-7
-    do_branch v2.0.6  2-0-6
+    echo "Syntax: apione <zmq_dir> <branch> <category>"
 fi
-
-#   Restore zeromq2 repository to master branch
-cd $ZMQ_DIR
-git checkout master
-cd $OWN_DIR

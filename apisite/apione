@@ -8,11 +8,12 @@
 #
 #   syntax: apione zmq_dir branch category
 #
-#   Processes a single branch/tag from a specified git repository location. 
-#   E.g. "apione ../../zeromq2-2-1 master 2-1-1".
+#   Processes a single branch/tag from a specified git repository location.
+#   E.g. "apione ../../zeromq2-1 master 2-1-1".
 #
 #   See README.md for installation & configuration.
 
+TOOLDIR=`dirname $0`
 OWN_DIR=$PWD
 
 #   This option controls whether we actually upload or not
@@ -25,7 +26,7 @@ UPLOAD=1
 #
 #
 function do_upload {
-    python ./sendpage.py $1 $2 $3
+    python $TOOLDIR/sendpage.py $1 $2 $3
 
     if [ $? != 0 ]; then
         echo "Error uploading file to wikidot"
@@ -39,7 +40,7 @@ function do_branch {
     export ZMQ_DIR=$1
     export BRANCH=$2
     export CATEGORY=$3
-    
+
     echo "Building docs for $ZMQ_DIR $BRANCH..."
     cd $ZMQ_DIR
     git checkout -q $BRANCH
@@ -61,7 +62,7 @@ function do_branch {
     cd $OWN_DIR
     echo "Generating Wikidot pages..."
     for FILE in $FILES; do
-        perl ./xml2wd.pl $ZMQ_DIR/doc/$FILE.xml > $FILE.wd
+        perl $TOOLDIR/xml2wd.pl $ZMQ_DIR/doc/$FILE.xml > $FILE.wd
     done
 
     if [ $UPLOAD -eq 1 ]; then
@@ -69,6 +70,10 @@ function do_branch {
 
         #   Send table of contents as category:_start
         do_upload $CATEGORY "_start" "ØMQ API"
+
+        #   Send template as category:_template
+        cp _template.txt _template.wd
+        do_upload $CATEGORY "_template" "Category template - generated"
 
         #   Now send individual man pages
         for FILE in $FILES; do

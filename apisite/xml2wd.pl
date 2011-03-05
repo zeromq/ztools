@@ -53,6 +53,11 @@ END
     }
     elsif (/<\/refnamediv>/) {
         $output = <<"END";
+[[div class="foldedtoc" style="margin:10px"]]
+[[collapsible show="+ Table of Contents" hide="- Table of Contents"]]
+[[toc]]
+[[/collapsible]]
+[[/div]]
 
 ++ Name
 

@@ -71,6 +71,10 @@ function do_branch {
         #   Send table of contents as category:_start
         do_upload $CATEGORY "_start" "ØMQ API"
 
+        #   Send template as category:_template
+        cp _template.txt _template.wd
+        do_upload $CATEGORY "_template" "Category template - generated"
+
         #   Now send individual man pages
         for FILE in $FILES; do
             TITLE=`egrep --after-context 1 PAGE_TITLE $FILE.wd | egrep zmq`

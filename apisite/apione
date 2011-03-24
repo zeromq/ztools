@@ -12,6 +12,7 @@
 #   E.g. "apione ../../zeromq2-1 master 2-1-1".
 #
 #   See README.md for installation & configuration.
+#   Requires wdput (from ztools/wdput) on PATH.
 
 TOOLDIR=`dirname $0`
 OWN_DIR=$PWD
@@ -24,9 +25,9 @@ UPLOAD=1
 # This function uploads a file to wikidot
 # Error in upload will cause the script to exit with non-zero status
 #
-#
+
 function do_upload {
-    python $TOOLDIR/sendpage.py $1 $2 $3
+    wdput 0mq-api $1 $2 $3
 
     if [ $? != 0 ]; then
         echo "Error uploading file to wikidot"

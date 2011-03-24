@@ -47,7 +47,7 @@ END
             open (TOC, ">_start.wd");
             print TOC "[[image http://api.zero.mq/local--files/admin:css/logo.gif]]\n\n";
             print TOC "++ ØMQ/$version API Reference\n\n";
-            print TOC "[/master:_start Master] | [/2-1-1:_start v2.1.1] | [/2-1-0:_start v2.1.0] | [/2-0-10:_start v2.0.10] | [/2-0-9:_start v2.0.9] | [/2-0-8:_start v2.0.8] | [/2-0-7:_start v2.0.7] | [/2-0-6:_start v2.0.6]\n\n";
+            print TOC "[/master:_start Master] | [/2-1-3:_start v2.1.3] | [/2-0-11:_start v2.0.11]\n\n";
             close (TOC);
         }
     }

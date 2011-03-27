@@ -45,7 +45,7 @@ $manual - $source/$version
 END
         if ($title eq "zmq") {
             open (TOC, ">_start.wd");
-            print TOC "[[image http://api.zero.mq/local--files/admin:css/logo.gif]]\n\n";
+            print TOC "[[image http://api.zeromq.org/local--files/admin:css/logo.gif link=\"/master:_start\"]]\n\n";
             print TOC "++ ØMQ/$version API Reference\n\n";
             print TOC "[/master:_start Master] | [/2-1-3:_start v2.1.3] | [/2-0-11:_start v2.0.11]\n\n";
             close (TOC);
@@ -109,7 +109,7 @@ END
         $output = "\n$header ". title_case ($1) ."\n";
     }
     elsif (/<note>/) {
-        $_ = load_tag ("simpara");
+        $_ = load_tag ("note");
         $output = "\n[[note]]\n$_\n[[/note]]\n";
     }
     elsif (/<simpara>/) {
@@ -132,6 +132,21 @@ END
                 last;
             }
         }
+        $output = "\n[[code]]\n$_\n[[/code]]\n";
+    }
+    elsif (/<screen>/) {
+        $_ = $';
+        chop while /\s$/;
+        $line = $_;
+        while (<>) {
+            chop while /\s$/;
+            $line .= "\n$_";
+            if ($line =~ /(.*)<\/screen>/s) {
+                $_ = $1;
+                last;
+            }
+        }
+        s/\/\//\\\/\\\//g;
         $output = "\n[[code]]\n$_\n[[/code]]\n";
     }
 

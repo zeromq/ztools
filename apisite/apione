@@ -28,7 +28,6 @@ UPLOAD=1
 
 function do_upload {
     wdput 0mq-api $1 $2 $3
-
     if [ $? != 0 ]; then
         echo "Error uploading file to wikidot"
         exit 1
@@ -49,7 +48,7 @@ function do_branch {
     ./configure --quiet
     cd doc
     make --quiet
-    rm *.xml    #   Makefile does not detect version differences for XML
+    rm -f *.xml    #   Makefile does not detect version differences for XML
     for a in *.txt; do make `basename $a .txt`.xml; done
 
     echo "Generating XML pages for manual..."

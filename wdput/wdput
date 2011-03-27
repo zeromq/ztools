@@ -15,6 +15,10 @@
 
 #   Get script arguments
 import sys
+if len(sys.argv) != 5: 
+    print "Usage: wdput sitename category name title"
+    sys.exit(1) 
+
 sitename = sys.argv [1]
 category = sys.argv [2]
 name     = sys.argv [3]

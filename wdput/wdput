@@ -1,24 +1,28 @@
-#! /bin/python
+#! /usr/bin/python
 #
-#   sendpage.py - Send one Wikidot page to api.zero.mq
-#   Part of the ztools/apisite toolkit.
+#   wdput - Send one Wikidot page to api.zero.mq
+#   Part of the ztools/apisite toolkit. Install into any directory on PATH.
 #
 #   Author: Pieter Hintjens <ph@imatix.com>
 #   License: public domain
 #
-#   syntax: python sendpage.py category page title
+#   syntax: wdput sitename category page title
+#
+#   Wikidot text must be in page + '.wd'
 #
 #   Supply your Wikidot user name as an environment variable APISITE_USER
 #   Supply your Wikidot API key as an environment variable APISITE_KEY
 
-#   This is the Wikidot site name for api.zero.mq
-site = "0mq-api"
-
 #   Get script arguments
 import sys
-category = sys.argv [1]
-name     = sys.argv [2]
-title    = sys.argv [3]
+if len(sys.argv) != 5: 
+    print "Usage: wdput sitename category name title"
+    sys.exit(1) 
+
+sitename = sys.argv [1]
+category = sys.argv [2]
+name     = sys.argv [3]
+title    = sys.argv [4]
 
 #   Get authentication credentials
 import os
@@ -37,7 +41,7 @@ for line in file:
 
 print " - " + category + ":" + name
 server.pages.save_one ({
-    "site": site,
+    "site": sitename,
     "page": category + ":" + name,
     "title": title,
     "content": content})

@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-#   apione - Upload all 0MQ manuals to api.zero.mq
+#   apione - Upload all 0MQ manuals to api.zeromq.org
 #   Part of the ztools/apione toolkit.
 #
 #   Author: Pieter Hintjens <ph@imatix.com>
@@ -27,7 +27,7 @@ UPLOAD=1
 #
 
 function do_upload {
-    wdput 0mq-api $1 $2 $3
+    wdput 0mq-api $1 $2 "$3"
     if [ $? != 0 ]; then
         echo "Error uploading file to wikidot"
         exit 1
@@ -66,7 +66,7 @@ function do_branch {
     done
 
     if [ $UPLOAD -eq 1 ]; then
-        echo "Uploading to api.zero.mq/$CATEGORY..."
+        echo "Uploading to api.zeromq.org/$CATEGORY..."
 
         #   Send table of contents as category:_start
         do_upload $CATEGORY "_start" "ØMQ API"

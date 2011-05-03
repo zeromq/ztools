@@ -146,7 +146,8 @@ END
                 last;
             }
         }
-        s/\/\//\\\/\\\//g;
+        s/\//\\\//g;
+        print $_;
         $output = "\n[[code]]\n$_\n[[/code]]\n";
     }
 
@@ -177,7 +178,7 @@ END
 
     #   General substitutions
     $output =~ s/\/\//@@\/\/@@/g;
-    $output =~ s/\\\/\\\//\/\//g;   #   // in code blocks was escaped
+    $output =~ s/\\\//\//g;     #   / in code blocks was escaped
 
     $output =~ s/0MQ/ØMQ/g;
     $output =~ s/<emphasis>([^<]*)<\/emphasis>/\/\/$1\/\//g;
@@ -210,16 +211,15 @@ sub load_tag {
             chop while /\s$/;
             if (/<screen>/) {
                 $_ = "[[code]]\n$'";
-                s/\/\//\\\/\\\//g;
                 $code = 1;
             }
             elsif (/<\/screen>/) {
                 $_ = "$`\n[[/code]]";
-                s/\/\//\\\/\\\//g;
+                s/\//\\\//g;
                 $code = 0;
             }
             if ($code) {
-                s/\/\//\\\/\\\//g;
+                s/\//\\\//g;
                 $line .= "\n$_";
             }
             else {

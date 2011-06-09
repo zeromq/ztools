@@ -1,12 +1,12 @@
 #! /usr/bin/python
 #
-#   wdput - Send one page to a Wikidot site
+#   wdattach - Attach a file to a Wikidot page
 #   Part of the ztools toolkit. Install into any directory on PATH.
 #
 #   Author: Pieter Hintjens <ph@imatix.com>
 #   License: public domain
 #
-#   syntax: wdput sitename category page title
+#   syntax: wdattach sitename category:page filename
 #
 #   Wikidot text must be in page + '.wd'
 #
@@ -15,14 +15,13 @@
 
 #   Get script arguments
 import sys
-if len(sys.argv) != 5:
-    print "Usage: wdput sitename category name title"
+if len(sys.argv) != 4:
+    print "Usage: wdput sitename category:page filename"
     sys.exit(1)
 
 sitename = sys.argv [1]
-category = sys.argv [2]
-name     = sys.argv [3]
-title    = sys.argv [4]
+pagename = sys.argv [2]
+filename = sys.argv [3]
 
 #   Get authentication credentials
 import os
@@ -34,14 +33,12 @@ from xmlrpclib import ServerProxy
 server = ServerProxy ('https://' + user + ':' + key + '@www.wikidot.com/xml-rpc-api.php')
 
 #   Send page content (create or update)
-file = open (name + ".wd", "r")
-content = ""
-for line in file:
-    content = content + line
+content = open (filename, "rb").read().encode ("base64")
+basename = os.path.basename (filename)
 
-print " - " + category + ":" + name
-server.pages.save_one ({
+print " - " + basename + "@" + pagename
+server.files.save_one ({
     "site": sitename,
-    "page": category + ":" + name,
-    "title": title,
+    "page": pagename,
+    "file": basename,
     "content": content})

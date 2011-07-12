@@ -47,7 +47,7 @@ END
             open (TOC, ">_start.wd");
             print TOC "[[image http://api.zeromq.org/local--files/admin:css/logo.gif link=\"/2-1:_start\"]]\n\n";
             print TOC "++ ØMQ/$version API Reference\n\n";
-            print TOC "[/3-0:_start v3.0 raw] | [/2-1:_start v2.1 stable] | [/2-0:_start v2.0 legacy]\n\n";
+            print TOC "[/3-0:_start v3.0 unstable] | [/2-1:_start v2.1 stable] | [/2-0:_start v2.0 legacy]\n\n";
             close (TOC);
         }
     }

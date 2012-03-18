@@ -35,7 +35,7 @@ To run on one specific version:
 
 Where branch is the git branch or tag, and category is the destination on the wiki site. E.g.
 
-    ./apione ../../libzmq master 3-0
+    ./apione ../../libzmq master 3-1
 
 ## Site Admin and CSS
 

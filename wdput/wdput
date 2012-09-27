@@ -39,7 +39,7 @@ content = ""
 for line in file:
     content = content + line
 
-print " - " + category + ":" + name
+print " - " + sitename + ":" + category + ":" + name + " - " + title
 server.pages.save_one ({
     "site": sitename,
     "page": category + ":" + name,

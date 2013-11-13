@@ -43,6 +43,7 @@ function do_branch {
 
     echo "Building docs for $ZMQ_DIR $BRANCH..."
     cd $ZMQ_DIR
+    git pull origin master
     git checkout -q $BRANCH
     sh ./autogen.sh > /dev/null 2>&1
     ./configure --quiet

@@ -10,13 +10,15 @@
 #
 #   Requires these gits be checked out parallel to the ztools git:
 #
-#   zeromq2-x - 2.2 release
-#   zeromq3-x - 3.2 release
-#   libzmq    - 3.3 release
+#   zeromq2-x - 2.x release
+#   zeromq3-x - 3.x release
+#   zeromq4-x - 4.x release
+#   libzmq    - 4.1 release
 #
 TOOLDIR=`dirname $0`
 
 #               Directory        Tag      Category
-$TOOLDIR/apione ../../zeromq2-x  v2.2.0   2-2
-$TOOLDIR/apione ../../zeromq3-x  v3.2.2   3-2
-$TOOLDIR/apione ../../libzmq     v3.3.0   3-3
+$TOOLDIR/apione ../../zeromq2-x  master   2-2
+$TOOLDIR/apione ../../zeromq3-x  master   3-2
+$TOOLDIR/apione ../../zeromq4-x  master   4-0
+$TOOLDIR/apione ../../libzmq     master   4-1

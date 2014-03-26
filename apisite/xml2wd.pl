@@ -17,6 +17,7 @@
 $category = $ENV{'CATEGORY'} || "page";
 
 while (<>) {
+print $_;
     $output = "";
     s/\[/@@[@@/g;
     s/\]/@@]@@/g;
@@ -200,6 +201,7 @@ END
 
 sub load_tag {
     local ($tag) = @_;
+print "LOAD TAG: $tag\n";
     if (/<$tag>(.*)<\/$tag>/) {
         return $1;
     }
@@ -213,7 +215,7 @@ sub load_tag {
                 $_ = "[[code]]\n$'";
                 $code = 1;
             }
-            elsif (/<\/screen>/) {
+            if (/<\/screen>/) {
                 $_ = "$`\n[[/code]]";
                 s/\//\\\//g;
                 $code = 0;

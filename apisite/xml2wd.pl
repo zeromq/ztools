@@ -17,7 +17,6 @@
 $category = $ENV{'CATEGORY'} || "page";
 
 while (<>) {
-print $_;
     $output = "";
     s/\[/@@[@@/g;
     s/\]/@@]@@/g;
@@ -94,14 +93,14 @@ END
         $output = "\n||||~ $1 ||\n";
     }
     elsif (/<entry>/) {
-        $_ = load_tag ("entry");
+        $_ = load_tag ($_, "entry");
         $output = "|| $_";
     }
     elsif (/<\/row>/) {
         $output = "||\n";
     }
     elsif (/<formalpara>/) {
-        $_ = load_tag ("formalpara");
+        $_ = load_tag ($_, "formalpara");
         if (/<title>(.*)<\/title><para>\s*(.*)<\/para>/s) {
             $output = "\n**". title_case ($1) ."**\n\n$2\n";
         }
@@ -110,15 +109,15 @@ END
         $output = "\n$header ". title_case ($1) ."\n";
     }
     elsif (/<note>/) {
-        $_ = load_tag ("note");
+        $_ = load_tag ($_, "note");
         $output = "\n[[note]]\n$_\n[[/note]]\n";
     }
     elsif (/<simpara>/) {
-        $_ = load_tag ("simpara");
+        $_ = load_tag ($_, "simpara");
         $output = "\n$_\n";
     }
     elsif (/<literallayout>/) {
-        $_ = load_tag ("literallayout");
+        $_ = load_tag ($_, "literallayout");
         $output = "\n> {{$_}}\n";
     }
     elsif (/<literallayout class="monospaced">/) {
@@ -153,11 +152,10 @@ END
     }
 
     if (/<term>/) {
-        $term = load_tag ("term");
+        $term = load_tag ($_, "term");
     }
     if (/<listitem>/) {
-        $_ = load_tag ("listitem");
-        #print "---- $_\n";
+        $_ = load_tag ($_, "listitem");
         #   Sometimes tables end up inside list items
         s/<informal.*?<tbody valign="top">/\n/s;
         s/\s*<\/tbody><\/tgroup><\/informaltable>//s;
@@ -188,7 +186,7 @@ END
     $output =~ s/<manvolnum>([^<]*)<\/manvo>/{{$1}}/g;
     $output =~ s/<citerefentry>\s*<refentrytitle>([^<]*)<\/refentrytitle><manvolnum>([^<]*)<\/manvolnum>\s*<\/citerefentry>/\[\/$category:$1 $1($2)\]/g;
     $output =~ s/<ulink url="[^"]*">([^<]*)<\/ulink>/$1/g;
-    $output =~ s/<simpara>([^<]*)<\/simpara>/$1/g;
+    $output =~ s/<simpara>\s*([^<]*)<\/simpara>/$1/g;
     $output =~ s/&lt;/</g;
     $output =~ s/&gt;/>/g;
     $output =~ s/&amp;/&/g;
@@ -200,22 +198,30 @@ END
 
 
 sub load_tag {
-    local ($tag) = @_;
-print "LOAD TAG: $tag\n";
+    my ($_, $tag) = @_;
     if (/<$tag>(.*)<\/$tag>/) {
         return $1;
     }
     else {
         chop while /\s$/;
         /<$tag>/;
-        $line = $';
+        my $line = $';
+        my $code = 0;
         while (<>) {
             chop while /\s$/;
-            if (/<screen>/) {
+            s/  +/ /g;
+            if (/<listitem>/) {
+                $line .= "\n * " . load_tag ($_, "listitem");
+                $_ = "";
+            }
+            elsif (/<itemizedlist>/ || /<\/itemizedlist>/) {
+                $_ = "";
+            }
+            elsif (/<screen>/) {
                 $_ = "[[code]]\n$'";
                 $code = 1;
             }
-            if (/<\/screen>/) {
+            elsif (/<\/screen>/) {
                 $_ = "$`\n[[/code]]";
                 s/\//\\\//g;
                 $code = 0;
@@ -230,7 +236,6 @@ print "LOAD TAG: $tag\n";
             }
             if ($line =~ /(.*)<\/$tag>/s) {
                 return $1;
-                last;
             }
         }
     }

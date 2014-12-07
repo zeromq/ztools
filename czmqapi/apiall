@@ -1,0 +1,22 @@
+#! /bin/bash
+#
+#   apiall - Upload all CZMQ manuals to api.zero.mq
+#   Part of the ztools/apisite toolkit.
+#
+#   Author: Pieter Hintjens <ph@imatix.com>
+#   License: public domain
+#
+#   syntax: apiall
+#
+#   Requires these gits be checked out parallel to the ztools git:
+#
+#   czmq
+#
+TOOLDIR=`dirname $0`
+
+#               Directory        Tag      Category
+$TOOLDIR/apione ../../czmq       master   CZMQ3-0
+$TOOLDIR/apione ../../czmq       v2.2.0   CZMQ2-2
+$TOOLDIR/apione ../../czmq       v1.4.1   CZMQ1-4
+
+

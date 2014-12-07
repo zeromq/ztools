@@ -1,0 +1,97 @@
+#! /bin/bash
+#
+#   apione - Upload all ZeroMQ manuals to api.zeromq.org
+#   Part of the ztools/apione toolkit.
+#
+#   Author: Pieter Hintjens <ph@imatix.com>
+#   License: public domain
+#
+#   syntax: apione zmq_dir branch category
+#
+#   Processes a single branch/tag from a specified git repository location.
+#   E.g. "apione ../../zeromq2-1 master 2-1-1".
+#
+#   See README.md for installation & configuration.
+#   Requires wdput (from ztools/wdput) on PATH.
+
+export WEBSITE=0mq-api
+export UPLOAD=1            #   If 0, don't actually upload
+export TOOLDIR=`dirname $0`
+export OWN_DIR=$PWD
+
+# This function uploads a file to wikidot
+# Error in upload will cause the script to exit with non-zero status
+
+function do_upload {
+    wdput $WEBSITE $1 $2 "$3"
+    if [ $? != 0 ]; then
+        echo "Error uploading file to wikidot"
+        exit 1
+    fi
+}
+
+#   This function builds and uploads one branch's documentation
+#
+function do_branch {
+    export ZMQ_DIR=$1
+    export BRANCH=$2
+    export CATEGORY=$3
+
+    echo "Building docs for $ZMQ_DIR $BRANCH..."
+    cd $ZMQ_DIR
+    git pull origin master
+    git checkout -q $BRANCH
+    sh ./autogen.sh > /dev/null 2>&1
+    ./configure --quiet
+    cd doc
+    make --quiet
+    rm -f *.xml    #   Makefile does not detect version differences for XML
+    for a in *.txt; do
+        make `basename $a .txt`.xml
+    done
+
+    echo "Generating XML pages for manual..."
+    FILES=
+    for FILE in zmq zmq_*.txt; do
+        BASE=`basename $FILE .txt`
+        make --quiet $BASE.xml;
+        FILES="$FILES $BASE"
+    done
+
+    cd $OWN_DIR
+    echo "Generating Wikidot pages..."
+    for FILE in $FILES; do
+        perl $TOOLDIR/xml2wd.pl $ZMQ_DIR/doc/$FILE.xml > $FILE.wd
+    done
+
+    if [ $UPLOAD -eq 1 ]; then
+        #   Send table of contents as category:_start
+        do_upload $CATEGORY "_start" "ZeroMQ API"
+
+        #   Send template as category:_template
+        cp _template.txt _template.wd
+        do_upload $CATEGORY "_template" "Category template - generated"
+
+        #   Now send individual man pages
+        for FILE in $FILES; do
+            TITLE=`egrep --after-context 1 PAGE_TITLE $FILE.wd | egrep zmq`
+            do_upload $CATEGORY $FILE $TITLE
+        done
+    fi
+
+    rm *.wd
+    #   Restore repository to master branch
+    cd $ZMQ_DIR
+    git checkout -q master
+    cd $OWN_DIR
+}
+
+if [ ! -z "$3" ]; then
+    if [ ! -f $1/doc/zmq.txt ]; then
+        echo "Can't find ZeroMQ doc directory in $1"
+        exit
+    fi
+    do_branch $1 $2 $3
+else
+    echo "Syntax: apione <zmq_dir> <branch> <category>"
+fi

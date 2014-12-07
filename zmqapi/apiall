@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-#   apiall - Upload all 0MQ manuals to api.zero.mq
+#   apiall - Upload all ZeroMQ manuals to api.zero.mq
 #   Part of the ztools/apisite toolkit.
 #
 #   Author: Pieter Hintjens <ph@imatix.com>

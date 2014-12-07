@@ -135,6 +135,10 @@ END
         $output = "\n[[code]]\n$_\n[[/code]]\n";
     }
     elsif (/<screen>/) {
+        if (/<\/screen>/) {
+            print "E: unhandled condition\n";
+            exit;
+        }
         $_ = $';
         chop while /\s$/;
         $line = $_;
@@ -147,7 +151,6 @@ END
             }
         }
         s/\//\\\//g;
-        print $_;
         $output = "\n[[code]]\n$_\n[[/code]]\n";
     }
 
@@ -192,6 +195,8 @@ END
     $output =~ s/&amp;/&/g;
     $output =~ s/&#8217;/'/g;
     $output =~ s/&#8230;/.../g;
+    $output =~ s/&#8201;/ /g;
+    $output =~ s/&#8212;/--/g;
 
     print $output if $output;
 }
@@ -221,7 +226,7 @@ sub load_tag {
                 $_ = "[[code]]\n$'";
                 $code = 1;
             }
-            elsif (/<\/screen>/) {
+            if (/<\/screen>/) {
                 $_ = "$`\n[[/code]]";
                 s/\//\\\//g;
                 $code = 0;

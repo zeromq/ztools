@@ -36,22 +36,33 @@ function do_branch {
     cd $CZMQ_DIR
     git pull origin master
     git checkout -q $BRANCH
+    echo "Running ./autogen.sh && ./configure..."
     sh ./autogen.sh > /dev/null 2>&1
     ./configure --quiet
     cd doc
-    make --quiet
-#     rm -f *.xml    #   Makefile does not detect version differences for XML
+    make
+    rm -f *.xml    #   Makefile does not detect version differences for XML
     for a in z*.txt; do
         make `basename $a .txt`.xml
     done
 
     echo "Generating XML pages for manual..."
     FILES=
+    DEPRECATED=
+    #   First all current classes, then deprecated ones
     for FILE in czmq z*.txt; do
         BASE=`basename $FILE .txt`
         make --quiet $BASE.xml;
-        FILES="$FILES $BASE"
+        head $FILE | egrep -q deprecated
+        if [ $? -eq 0 ]; then
+            DEPRECATED="$DEPRECATED $BASE"
+        else
+            FILES="$FILES $BASE"
+        fi
     done
+    FILES="$FILES $DEPRECATED"
+    echo $FILES
+    exit
 
     cd $OWN_DIR
     echo "Generating Wikidot pages..."

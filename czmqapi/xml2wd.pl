@@ -170,7 +170,7 @@ END
         }
         if ($variable_list) {
             die "Missing term in $name:$.\n" unless $term;
-            $output = "\n: $term:$_\n";
+            $output = "\n: $term: $_\n";
             $term = "";
         }
         else {

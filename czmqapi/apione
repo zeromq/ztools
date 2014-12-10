@@ -61,8 +61,6 @@ function do_branch {
         fi
     done
     FILES="$FILES $DEPRECATED"
-    echo $FILES
-    exit
 
     cd $OWN_DIR
     echo "Generating Wikidot pages..."

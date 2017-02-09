@@ -10,7 +10,7 @@
 
 #   Export so child scripts can access these
 export UPLOAD=1             #   If 0, don't actually upload
-export WEBSITE=0mq-api      #   Use ZeroMQ API site
+export WEBSITE=czmq         #   Use ZeroMQ API site
 export TOOLDIR=`dirname $0`
 export OWN_DIR=$PWD
 

@@ -45,9 +45,8 @@ $manual - $source/$version
 END
         if ($title eq "zmq") {
             open (TOC, ">_start.wd");
-            print TOC "[[image http://api.zeromq.org/local--files/admin:css/logo.gif link=\"/4-0:_start\"]]\n\n";
             print TOC "++ ØMQ/$version API Reference\n\n";
-            print TOC "[/4-2:_start v4.2 master] | [/4-1:_start v4.1 stable] | [/3-2:_start v3.2 legacy]\n\n";
+            print TOC "[/ZMQ-master:_start v4.2 master] | [/ZMQ4-2:_start v4.2 stable] | [/ZMQ4-1:_start v4.1 stable] | [/ZMQ4-0:_start v4.0 stable] | [/ZMQ3-2:_start v3.2 legacy]\n\n";
             close (TOC);
         }
     }

@@ -15,8 +15,8 @@
 TOOLDIR=`dirname $0`
 
 #               Directory        Tag      Category
-$TOOLDIR/apione ../../czmq       master   CZMQ3-0
+$TOOLDIR/apione ../../czmq       master   CZMQ-MASTER
+$TOOLDIR/apione ../../czmq       v4.0.3   CZMQ4-0
+$TOOLDIR/apione ../../czmq       v3.0.2   CZMQ3-0
 $TOOLDIR/apione ../../czmq       v2.2.0   CZMQ2-2
 $TOOLDIR/apione ../../czmq       v1.4.1   CZMQ1-4
-
-

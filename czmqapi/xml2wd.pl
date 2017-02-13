@@ -134,7 +134,7 @@ END
         $output = "\n[[code]]\n$_\n[[/code]]\n";
     }
     elsif (/<screen>/) {
-        if (/<\/screen>/) {
+        if (/^\s*<\/screen>/) {
             print "E: unhandled condition\n";
             exit;
         }

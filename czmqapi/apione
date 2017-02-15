@@ -40,7 +40,7 @@ function do_branch {
     sh ./autogen.sh > /dev/null 2>&1
     ./configure --quiet
     cd doc
-    make -j4
+    make -j4 --quiet
     rm -f *.xml    #   Makefile does not detect version differences for XML
     for a in z*.txt; do
         make `basename $a .txt`.xml

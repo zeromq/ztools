@@ -21,5 +21,5 @@ TOOLDIR=`dirname $0`
 $TOOLDIR/apione ../../zeromq3-x  master   3-2
 $TOOLDIR/apione ../../zeromq4-x  master   4-0
 $TOOLDIR/apione ../../zeromq4-1  master   4-1
-$TOOLDIR/apione ../../libzmq     v4.2.1   4-2
+$TOOLDIR/apione ../../libzmq     v4.2.2   4-2
 $TOOLDIR/apione ../../libzmq     master   master

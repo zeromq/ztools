@@ -46,7 +46,7 @@ END
         if ($title eq "zmq") {
             open (TOC, ">_start.wd");
             print TOC "++ ØMQ/$version API Reference\n\n";
-            print TOC "[/master:_start v4.2 master] | [/4-2:_start v4.2 stable] | [/4-1:_start v4.1 stable] | [/4-0:_start v4.0 stable] | [/3-2:_start v3.2 legacy]\n\n";
+            print TOC "[/master:_start v4.3 master] | [/4-3:_start v4.3 stable] | [/4-2:_start v4.2 stable] | [/4-1:_start v4.1 stable] | [/4-0:_start v4.0 stable] | [/3-2:_start v3.2 legacy]\n\n";
             close (TOC);
         }
     }

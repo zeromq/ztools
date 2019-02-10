@@ -46,7 +46,7 @@ END
         if ($title eq "czmq") {
             open (TOC, ">_start.wd");
             print TOC "++ CZMQ/$version API Reference\n\n";
-            print TOC "[/CZMQ-MASTER:_start v4.0.4 master] | [/CZMQ4-0:_start v4.0.3 stable] | [/CZMQ3-0:_start v3.0 stable] | [/CZMQ2-2:_start v2.2 stable] | [/CZMQ1-4:_start v1.4 stable]\n\n";
+            print TOC "[/CZMQ-MASTER:_start v4.2.1 master] | [/CZMQ4-2:_start v4.2.0 stable] | [/CZMQ4-1:_start v4.1.1 stable] | [/CZMQ4-0:_start v4.0.2 stable] | [/CZMQ3-0:_start v3.0 stable] | [/CZMQ2-2:_start v2.2 stable] | [/CZMQ1-4:_start v1.4 stable]\n\n";
             close (TOC);
         }
     }
